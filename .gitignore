@@ -1,0 +1,27 @@
+# Virtual environments
+env/*
+env1/*
+venv/*
+paramiko_layer/
+python/*
+# Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Editor settings
+.vscode/*
+.idea/
+
+# Ignore large binaries and image files
+*.png
+*.jpg
+*.jpeg
+*.dll
+*.lib
+*.pyd
+*.pt
+# Optional: output folders
+outputs/
+logs/
+checkpoints/

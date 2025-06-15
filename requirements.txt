@@ -1,0 +1,7 @@
+flask
+ultralytics
+Pillow
+easyocr
+numpy
+torch>=1.8.0
+opencv-python-headless

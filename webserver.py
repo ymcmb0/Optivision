@@ -4,14 +4,15 @@ from PIL import Image
 import io
 import numpy as np
 import cv2
-import requests
+from dotenv import load_dotenv
+import requests, os
 import torch
 from torchvision import transforms, models
-
+load_dotenv()
 app = Flask(__name__)
 model = YOLO("yolov8s.pt")
-ocr_api_key = 'K86176284988957'
-
+ocr_api_key = os.getenv("ocr_api_key")
+print(ocr_api_key)
 # 🔍 OCR.Space API
 def compress_image(image_pil, output_path="compressed_image.jpg", quality=40):
     img = image_pil.resize((image_pil.width // 2, image_pil.height // 2))

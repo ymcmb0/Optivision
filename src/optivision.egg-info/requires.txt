@@ -1,0 +1,13 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pillow>=10.3
+torch<2.3,>=2.2
+torchvision<0.18,>=0.17
+ultralytics<9.0,>=8.1.47
+pydantic>=2.7
+requests>=2.32
+
+[dev]
+pytest>=8.1
+black
+ruff

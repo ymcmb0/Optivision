@@ -5,6 +5,7 @@ venv/*
 paramiko_layer/
 python/*
 .env
+.venv/
 # Python cache files
 __pycache__/
 *.py[cod]

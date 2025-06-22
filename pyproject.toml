@@ -1,0 +1,31 @@
+[project]
+name = "optivision"
+version = "0.1.0"
+description = "Vision-OCR-weather microservice"
+authors = [
+    { name = "Asim I.", email = "asimi7@gmail.com" }
+]
+requires-python = ">=3.10"
+
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "pillow>=10.3",
+    "torch>=2.2,<2.3",
+    "torchvision>=0.17,<0.18",
+    "ultralytics>=8.1.47,<9.0",
+    "numpy<2.0",
+    "scipy<1.13",
+    "pandas<2.3",
+    "pydantic-settings>=2.2",
+    "pydantic>=2.7",
+    "requests>=2.32",
+    "python-multipart>=0.0.7",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.1", "black", "ruff"]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"

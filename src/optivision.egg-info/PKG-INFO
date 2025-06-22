@@ -1,0 +1,18 @@
+Metadata-Version: 2.4
+Name: optivision
+Version: 0.1.0
+Summary: Vision-OCR-weather microservice
+Author-email: "Asim I." <asimi7@gmail.com>
+Requires-Python: >=3.10
+Requires-Dist: fastapi>=0.110
+Requires-Dist: uvicorn[standard]>=0.29
+Requires-Dist: pillow>=10.3
+Requires-Dist: torch<2.3,>=2.2
+Requires-Dist: torchvision<0.18,>=0.17
+Requires-Dist: ultralytics<9.0,>=8.1.47
+Requires-Dist: pydantic>=2.7
+Requires-Dist: requests>=2.32
+Provides-Extra: dev
+Requires-Dist: pytest>=8.1; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: ruff; extra == "dev"

@@ -9,7 +9,8 @@ python/*
 __pycache__/
 *.py[cod]
 *.pyo
-
+Dockerfile
+.dockerignore
 # Editor settings
 .vscode/*
 .idea/

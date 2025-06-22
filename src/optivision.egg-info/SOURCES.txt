@@ -1,0 +1,17 @@
+pyproject.toml
+src/optivision/__init__.py
+src/optivision/api.py
+src/optivision/config.py
+src/optivision.egg-info/PKG-INFO
+src/optivision.egg-info/SOURCES.txt
+src/optivision.egg-info/dependency_links.txt
+src/optivision.egg-info/requires.txt
+src/optivision.egg-info/top_level.txt
+src/optivision/models/__init__.py
+src/optivision/models/detector.py
+src/optivision/models/scene.py
+src/optivision/services/ocr_space.py
+src/optivision/utils/__init__.py
+src/optivision/utils/images.py
+src/optivision/utils/weather.py
+tests/test_detector.py

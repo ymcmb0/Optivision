@@ -1,27 +1,49 @@
-import io
-import logging
-from typing import Dict, Any
+from __future__ import annotations
+
 import requests
+from io import BytesIO
 from PIL import Image
 
 from ..config import get_settings
-from ..utils.images import compress_image
 
-log = logging.getLogger(__name__)
 settings = get_settings()
 
-def run_ocr(image: Image.Image, lang: str = "eng") -> Dict[str, Any]:
-    """Call OCR.Space API and return parsed JSON."""
-    img_buf = io.BytesIO()
-    compress_image(image, img_buf)                 # write JPEG into buffer
+ENDPOINT = "https://api.ocr.space/parse/image"
 
+
+def run_ocr(img: Image.Image, lang: str = "eng") -> dict:
+    """
+    Send an in-memory image to OCR.Space and return the parsed JSON.
+
+    Parameters
+    ----------
+    img   : Pillow Image (RGB, BGR, etc.)
+    lang  : ISO-639-1 language code supported by OCR.Space
+
+    Returns
+    -------
+    dict   OCR.Space JSON response (raises for HTTP/JSON errors)
+    """
+    # 1. Dump the Pillow image into an in-memory PNG
+    buf = BytesIO()
+    img.save(buf, format="PNG")          # lossless; change to "JPEG" if smaller is better
+    buf.seek(0)
+
+    # 2. Build multipart payload
+    files = {
+        "file": ("frame.png", buf, "image/png")   # (filename, bytes-like, mime)
+    }
     payload = {
-        "isOverlayRequired": False,
         "apikey": settings.ocr_space_api_key,
         "language": lang,
+        "OCREngine": 2,                 # 1 = tesseract, 2 = recommended
+        "scale": True,
     }
-    files = {"image.jpg": img_buf.getvalue()}
-    r = requests.post("https://api.ocr.space/parse/image",
-                      files=files, data=payload, timeout=15)
-    r.raise_for_status()
-    return r.json()
+
+    # 3. Request + error handling
+    r = requests.post(ENDPOINT, data=payload, files=files, timeout=30)
+    try:
+        r.raise_for_status()            # HTTP-level errors
+        return r.json()                 # may raise if payload isn’t valid JSON
+    finally:
+        buf.close()                     # free memory

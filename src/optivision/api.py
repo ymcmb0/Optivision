@@ -10,6 +10,7 @@ from .services.ocr_space import run_ocr
 from .utils.weather import current_weather
 from .utils.text_narrator import craft_sentence 
 from .config import get_settings
+from .services.ocr_space import run_ocr 
 
 app      = FastAPI(title="Optivision Inference API")
 settings = get_settings()
@@ -31,11 +32,7 @@ async def inference(image: UploadFile = File(...)):
     env = classify_environment(img)  # "indoor" | "outdoor"
 
     # 2 ── OCR ------------------------------------------------------------------
-    ocr_json = run_ocr(img)
-    ocr_text = (
-        (ocr_json.get("ParsedResults", [{}])[0].get("ParsedText") or "").strip()
-        or None
-    )
+    ocr_text: str | None = run_ocr(img)
 
     # 3 ── weather (only when outdoors) ----------------------------------------
     weather = current_weather(31.5204, 74.3587) if env == "outdoor" else None

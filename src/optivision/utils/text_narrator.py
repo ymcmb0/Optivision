@@ -1,15 +1,14 @@
-# src/optivision/utils/text_narrator.py
+#  ────────────────────────────────────────────────────────────────────────────
+#  utils / text_narrator.py
+#  Craft one natural-sounding sentence that summarises what the system sees.
+#  ────────────────────────────────────────────────────────────────────────────
 """
-Craft a single, human-friendly sentence that summarises the vision pipeline.
-
-Signature
-─────────
-    craft_sentence(
-        objects: list[str] | set[str],
-        ocr_text: str | None,
-        env:      Literal["indoor", "outdoor"],
-        weather:  str | None
-    ) -> str
+craft_sentence(
+    objects : list[str] | set[str],
+    ocr_text: str | None,
+    env     : Literal["indoor", "outdoor"],
+    weather : str | None
+) -> str
 """
 
 from __future__ import annotations
@@ -17,42 +16,74 @@ from typing import Literal
 
 __all__ = ["craft_sentence"]
 
+# --------------------------------------------------------------------------- #
+# helpers                                                                     #
+# --------------------------------------------------------------------------- #
+_VOWELS = set("aeiou")
 
-def _join_items(items: list[str]) -> str:
-    """Return 'a chair', 'a chair and a table', 'a chair, a table and a lamp'."""
+
+def _articlise(noun: str) -> str:
+    """
+    Return the noun with a suitable indefinite article:
+        chair   -> "a chair"
+        apple   -> "an apple"
+        books   -> "books"        (plural → no article)
+    """
+    noun = noun.strip()
+    return noun if noun.endswith("s") else (
+        f"{'an' if noun[0].lower() in _VOWELS else 'a'} {noun}"
+    )
+
+
+def _list_with_commas(items: list[str]) -> str:
+    """
+    Oxford-comma list:
+        ["a chair"]                       -> "a chair"
+        ["a chair", "a table"]            -> "a chair and a table"
+        ["a chair", "a table", "a lamp"]  -> "a chair, a table and a lamp"
+    """
     if not items:
         return "nothing in particular"
     if len(items) == 1:
-        return f"a {items[0]}"
-    if len(items) == 2:
-        return f"a {items[0]} and a {items[1]}"
+        return items[0]
     head, tail = ", ".join(items[:-1]), items[-1]
-    return f"{head}, and a {tail}"
+    conjunction = "and" if len(items) == 2 else "and"
+    return f"{head} {conjunction} {tail}"
 
 
+# --------------------------------------------------------------------------- #
+# public                                                                      #
+# --------------------------------------------------------------------------- #
 def craft_sentence(
     objects: list[str] | set[str],
     ocr_text: str | None,
     env: Literal["indoor", "outdoor"],
     weather: str | None,
 ) -> str:
-    """Compose a natural-sounding description for TTS / UI."""
-    # 1. Objects
-    obj_phrase = f"I can see {_join_items(sorted(objects))}."
+    """
+    Build a friendly one-liner for TTS / UI, always in the same order:
+        • objects
+        • OCR (if any)
+        • scene type
+        • weather (if outdoor)
+    """
+    # ---------- objects ---------------------------------------------------- #
+    obj_words = sorted(objects)
+    obj_phrase = f"I can see {_list_with_commas([_articlise(o) for o in obj_words])}."
 
-    # 2. Scene type
-    scene_phrase = f"It looks like an {env} scene."
+    # ---------- OCR -------------------------------------------------------- #
+    ocr_phrase = ""
+    print(f"🔍 OCR text: {ocr_text!r}")
+    if ocr_text:
+        cleaned = ocr_text.strip()
+        # Short snippets are quoted; long ones are paraphrased
+        if len(cleaned.split()) <= 12:
+            ocr_phrase = f' The visible text says: "{cleaned}".'
+        else:
+            ocr_phrase = " There is some printed text in view."
 
-    # 3. Weather (optional)
+    # ---------- scene & weather ------------------------------------------- #
+    scene_phrase = f" It looks like an {env} scene."
     weather_phrase = f" Weather feels {weather.lower()}." if weather else ""
 
-    # 4. OCR (optional) – trim and quote if short, otherwise summarise
-    ocr_phrase = ""
-    if ocr_text:
-        text = ocr_text.strip()
-        if len(text.split()) <= 12:
-            ocr_phrase = f' The text reads “{text}.”'
-        else:
-            ocr_phrase = " There’s some printed text in view."
-
-    return (obj_phrase + " " + scene_phrase + weather_phrase + ocr_phrase).strip()
+    return (obj_phrase + ocr_phrase + scene_phrase + weather_phrase).strip()
